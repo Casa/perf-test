@@ -1,64 +1,66 @@
+#!/usr/bin/env node
+
 const ElectrumCli = require('electrum-client')
 const bitcoin = require('bitcoinjs-lib')
 const yargs = require('yargs')
 const fs = require('fs')
 
-// Default configuration & constants
 
-electrumHost = '127.0.0.1'
-electrumPort = 50001
-electrumProto = 'tcp'
-electrumSsl = false
-electrumNetwork = 'mainnet'
-addresses = [
-  '1AGyaDKdHWo8TcGADUCWd8JYXMQrky8Uko',
-  '3EBaaBxgShLxq8w2dDjhSfeb476wRScjKK',
-  '3Fs5uFKJRshVoPfhbSrZ9Z4yg5F93b2qAg'
-];
-
+// Constants
+const ADDR_MAINNET = ['1AGyaDKdHWo8TcGADUCWd8JYXMQrky8Uko','3EBaaBxgShLxq8w2dDjhSfeb476wRScjKK'];
+const ADDR_TESTNET = ['2MsFEwgnorZrd6Eypb2L9cL4gdB4hHSpJMu','2MsFGJvxH1kCoRp3XEYvKduAjY6eYz9PJHz'];
 const TESTNET_P2SH_P2WSH = {
   messagePrefix: '\x18Bitcoin Signed Message:\n',
   bech32: 'tb',
-   bip32: {
-      public: 0x024289ef,
-      private: 0x024285b5,
-  },
+  bip32: { public: 0x024289ef, private: 0x024285b5, },
   pubKeyHash: 0x6f,
   scriptHash: 0xc4,
   wif: 0xef,
 };
 
+// Default configuration
+electrumHost = '127.0.0.1'
+electrumPort = 50001
+electrumProto = 'tcp'
+electrumSsl = false
+electrumNetwork = 'mainnet'
+addresses = ADDR_MAINNET
 
 // Parse CLI parameters
-
 const argv = yargs
-  .usage('Usage: $0 [args]')
-  .help()
-  .showHelpOnFail(false, 'Specify --help for available options')
-  .option('host', {
-    alias: 'h',
-    description: 'Electrum server hostname or IP address (default: 127.0.0.1)',
-    type: 'string'
-  })
-  .option('port', {
-    alias: 'p',
-    description: 'Electrum server hostname or IP address (default: 127.0.0.1)',
-    type: 'string'
-  })
-  .option('ssl', {
-    alias: 's',
-    description: 'Use SSL (default: false)',
-    type: 'boolean'
-  })
-  .option('testnet', {
-    description: 'Use bitcoin testnet (default: false)',
-    type: 'boolean'
-  })
   .option('addr', {
     alias: 'a',
     description: 'Address file',
     type: 'string'
   })
+  .option('testnet', {
+    alias: 't',
+    description: 'Use bitcoin testnet',
+    type: 'boolean',
+    default: false
+  })
+  .option('host', {
+    alias: 'H',
+    description: 'Electrum server hostname or IP',
+    type: 'string',
+    default: '127.0.0.1'
+  })
+  .option('port', {
+    alias: 'p',
+    description: 'Electrum server port',
+    type: 'string',
+    default: '50001'
+  })
+  .option('ssl', {
+    alias: 's',
+    description: 'Use SSL',
+    type: 'boolean',
+    default: false
+  })
+  .usage('Usage: $0 [args]')
+  .help()
+  .alias('help', 'h')
+  .showHelpOnFail(true, 'Specify --help for available options')
   .argv;
 
 if (argv.ssl) {
@@ -73,8 +75,10 @@ if (argv.addr) addresses = readAddressFile(argv.addr);
 
 
 // Update configuration
-
-if (electrumNetwork == 'testnet' && !electrumSsl) electrumPort = 60001;
+if (electrumNetwork == 'testnet') {
+  if (!electrumSsl) electrumPort = 60001;
+  addresses = ADDR_TESTNET;
+}
 
 
 // Utility functions
@@ -88,6 +92,7 @@ function readAddressFile(inputFile) {
     process.exit(1)
   }
 }
+
 function kvOut(key, value) {
   console.log(key.toString().padEnd(20), value.toString().padStart(8))
 }
@@ -112,6 +117,7 @@ function getScriptHash(address) {
 // Main
 
 const main = async () => {
+  console.log("Connecting to Electrum server: ", electrumHost, ":", electrumPort);
   const ecl = new ElectrumCli(electrumPort, electrumHost, electrumProto);
   try {
       await ecl.connect();

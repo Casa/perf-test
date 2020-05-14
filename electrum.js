@@ -24,6 +24,8 @@ electrumPort = 50001
 electrumProto = 'tcp'
 electrumSsl = false
 electrumNetwork = 'mainnet'
+compactOutput = false
+quietOutput = false
 addresses = ADDR_MAINNET
 
 // Parse CLI parameters
@@ -57,6 +59,17 @@ const argv = yargs
     type: 'boolean',
     default: false
   })
+  .option('compact', {
+    description: 'Compact output, single-line per address',
+    type: 'boolean',
+    default: false
+  })
+  .option('quiet', {
+    alias: 'q',
+    description: 'Suppress header & footer output',
+    type: 'boolean',
+    default: false
+  })
   .usage('Usage: $0 [args]')
   .help()
   .alias('help', 'h')
@@ -72,6 +85,8 @@ if (argv.host) electrumHost = argv.host;
 if (argv.port) electrumPort = argv.port;
 if (argv.testnet) electrumNetwork = 'testnet';
 if (argv.addr) addressFile = argv.addr;
+if (argv.compact) compactOutput = argv.compact;
+if (argv.quiet) quietOutput = argv.quiet;
 
 
 // Update configuration
@@ -84,7 +99,7 @@ if (addressFile) addresses = readAddressFile(argv.addr);
 
 // Utility functions
 function readAddressFile(inputFile) {
-  console.log("Reading address list from file: ", inputFile);
+  if (!quietOutput) console.log("Reading address list from file: ", inputFile);
   try {
     return fs.readFileSync(inputFile).toString().split("\n");
   } catch(e) {
@@ -96,6 +111,10 @@ function readAddressFile(inputFile) {
 
 function kvOut(key, value) {
   console.log(key.toString().padEnd(20), value.toString().padStart(8))
+}
+function compactOut(addr, ) {
+  // TODO: csv concat
+  //console.log(key.toString().padEnd(20), value.toString().padStart(8))
 }
 
 function getScriptHash(address) {
@@ -118,13 +137,14 @@ function getScriptHash(address) {
 // Main
 
 const main = async () => {
-  console.log("Connecting to Electrum server: ", electrumHost, ":", electrumPort);
+  if (!quietOutput) console.log("Connecting to Electrum server: ", electrumHost, ":", electrumPort);
   const ecl = new ElectrumCli(electrumPort, electrumHost, electrumProto);
   try {
       await ecl.connect();
   } catch (e) {
       console.log('Error connecting to Electrum:');
       console.log(e);
+      process.exit(1);
   }
   try {
     addrCountTotal = 0;
@@ -132,20 +152,23 @@ const main = async () => {
 
     const ver = await ecl.server_version("CasaPerfTest", "1.4");
     const fee = await ecl.blockchainEstimatefee(4)
-    console.log('server version:', ver);
-    console.log('fee estimate: ' + fee)
-    console.log()
+    if (!quietOutput) {
+      console.log('server version:', ver);
+      console.log('fee estimate: ' + fee)
+      console.log()
+      if (compactOutput) console.log('address,txCount,utxoCount,balanceTime,txCountTime,utxoCountTime')
+    }
 
     for (i = 0; i < addresses.length; i++) {
       address = addresses[i];
       if (address == '') continue;
       addrCountTotal++;
-      console.log(`address: ${address}`);
+      if (!compactOutput) console.log('address:', address);
 
       const scriptHash = getScriptHash(address);
 
-      const getBalanceStart = new Date();
       try {
+        const getBalanceStart = new Date();
         const balance = await ecl.blockchainScripthash_getBalance(scriptHash)
         const getBalanceTime = new Date() - getBalanceStart;
 
@@ -157,21 +180,35 @@ const main = async () => {
         const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
         const getUtxoTime = new Date() - getUtxoStart;
 
-        console.log('balance: ', balance);
-        kvOut('history count: ', history.length);
-        kvOut('utxo count: ', unspent.length);
-        kvOut('getBalance time: ', getBalanceTime);
-        kvOut('getTxHistory time: ', getTxHistoryTime);
-        kvOut('getUtxo time: ', getUtxoTime);
+        if (!compactOutput) {
+          console.log('balance:', balance);
+          kvOut('history count:', history.length);
+          kvOut('utxo count:', unspent.length);
+          kvOut('getBalance time:', getBalanceTime);
+          kvOut('getTxHistory time:', getTxHistoryTime);
+          kvOut('getUtxo time:', getUtxoTime);
+        } else {
+          console.log(
+            address + ',' +
+            history.length + ',' +
+            unspent.length + ',' +
+            getBalanceTime + ',' +
+            getTxHistoryTime + ',' +
+            getUtxoTime
+          );
+        }
       } catch(e) {
         addrCountErr++;
-        console.log('error: ', e)
+        if (!compactOutput) console.log('error', e);
       }
-      console.log()
+      if (!compactOutput) console.log();
     }
 
-    kvOut('Addresses tested', addrCountTotal);
-    kvOut('Addresses errored', addrCountErr);
+    if (!quietOutput) {
+      console.log();
+      kvOut('Addresses tested', addrCountTotal);
+      kvOut('Addresses errored', addrCountErr);
+    }
 
   } catch(e) {
     console.log(e)

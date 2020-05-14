@@ -1,14 +1,19 @@
 const ElectrumCli = require('electrum-client')
 const bitcoin = require('bitcoinjs-lib')
+const yargs = require('yargs')
 
-// Run command: node electrumTest.js
+// Default configuration & constants
 
+electrumHost = '127.0.0.1'
+electrumPort = 50001
+electrumProto = 'tcp'
+electrumSsl = false
+electrumNetwork = 'mainnet'
 const ADDRESSES_SMALL = [
   '1AGyaDKdHWo8TcGADUCWd8JYXMQrky8Uko',
   '3EBaaBxgShLxq8w2dDjhSfeb476wRScjKK',
   '3Fs5uFKJRshVoPfhbSrZ9Z4yg5F93b2qAg'
 ];
-
 const ADDRESSES_LARGE = [
   '3C6qQDSRZVahLm5JryiF2zQFTeKzNQPfnH',
   '16ftSEQ4ctQFDtVZiUBusQUjRrGhM3JYwe',
@@ -16,12 +21,10 @@ const ADDRESSES_LARGE = [
   '3Kzh9qAqVWQhEsfQz7zEQL1EuSx5tyNLNS',
   '16FSBGvQfy4K8dYvPPWWpmzgKM6CvrCoVy',
 ];
-
 const ADDRESSES_GIGANTIC = [
   '1Ross5Np5doy4ajF9iGXzgKaC2Q3Pwwxv',
   '1diceDCd27Cc22HV3qPNZKwGnZ8QwhLTc'
 ];
-
 const TESTNET_P2SH_P2WSH = {
   messagePrefix: '\x18Bitcoin Signed Message:\n',
   bech32: 'tb',
@@ -33,6 +36,55 @@ const TESTNET_P2SH_P2WSH = {
   scriptHash: 0xc4,
   wif: 0xef,
 };
+
+
+// Parse CLI parameters
+
+const argv = yargs
+  .usage('Usage: $0 [args]')
+  .help()
+  .showHelpOnFail(false, 'Specify --help for available options')
+  .option('host', {
+    alias: 'h',
+    description: 'Electrum server hostname or IP address (default: 127.0.0.1)',
+    type: 'string'
+  })
+  .option('port', {
+    alias: 'p',
+    description: 'Electrum server hostname or IP address (default: 127.0.0.1)',
+    type: 'string'
+  })
+  .option('ssl', {
+    alias: 's',
+    description: 'Use SSL (default: false)',
+    type: 'boolean'
+  })
+  .option('testnet', {
+    description: 'Use bitcoin testnet (default: false)',
+    type: 'boolean'
+  })
+  .argv;
+
+if (argv.ssl) {
+  //electrumSsl = true;
+  console.log("ssl not yet supported")
+  process.exit()
+}
+if (argv.host) electrumHost = argv.host;
+if (argv.port) electrumPort = argv.port;
+if (argv.testnet) electrumNetwork = 'testnet';
+
+
+// Update configuration
+
+if (electrumNetwork == 'testnet' && !electrumSsl) electrumPort = 60001;
+
+
+// Utility functions
+
+function kvOut(key, value) {
+  console.log(key.toString().padEnd(20), value.toString().padStart(8))
+}
 
 function getScriptHash(address) {
 
@@ -50,12 +102,11 @@ function getScriptHash(address) {
   return reversedHash.toString('hex');
 }
 
-function kvOut(key, value) {
-  console.log(key.toString().padEnd(20), value.toString().padStart(8))
-}
+
+// Main
 
 const main = async () => {
-  const ecl = new ElectrumCli(50001, '127.0.0.1', 'tcp');
+  const ecl = new ElectrumCli(electrumPort, electrumHost, electrumProto);
   try {
       await ecl.connect();
   } catch (e) {
@@ -108,3 +159,4 @@ const main = async () => {
   await ecl.close()
 }
 main()
+// EOF

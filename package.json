@@ -1,0 +1,20 @@
+{
+  "name": "perf-test",
+  "version": "0.0.1",
+  "description": "Casa Performance Tests",
+  "main": "electrum.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/Casa/perf-test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bitcoinjs-lib": "^5.1.7",
+    "electrum-client": "0.0.6",
+    "yargs": "^15.3.1"
+  }
+}

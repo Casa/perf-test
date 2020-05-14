@@ -71,7 +71,7 @@ if (argv.ssl) {
 if (argv.host) electrumHost = argv.host;
 if (argv.port) electrumPort = argv.port;
 if (argv.testnet) electrumNetwork = 'testnet';
-if (argv.addr) addresses = readAddressFile(argv.addr);
+if (argv.addr) addressFile = argv.addr;
 
 
 // Update configuration
@@ -79,6 +79,7 @@ if (electrumNetwork == 'testnet') {
   if (!electrumSsl) electrumPort = 60001;
   addresses = ADDR_TESTNET;
 }
+if (addressFile) addresses = readAddressFile(argv.addr);
 
 
 // Utility functions

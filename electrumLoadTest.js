@@ -10,11 +10,11 @@ const ADDRESSES_SMALL = [
 ];
 
 const ADDRESSES_LARGE = [
-  '16FSBGvQfy4K8dYvPPWWpmzgKM6CvrCoVy',
+  '3C6qQDSRZVahLm5JryiF2zQFTeKzNQPfnH',
+  '16ftSEQ4ctQFDtVZiUBusQUjRrGhM3JYwe',
   '35hK24tcLEWcgNA4JxpvbkNkoAcDGqQPsP',
   '3Kzh9qAqVWQhEsfQz7zEQL1EuSx5tyNLNS',
-  '16ftSEQ4ctQFDtVZiUBusQUjRrGhM3JYwe',
-  '3C6qQDSRZVahLm5JryiF2zQFTeKzNQPfnH',
+  '16FSBGvQfy4K8dYvPPWWpmzgKM6CvrCoVy',
 ];
 
 const ADDRESSES_GIGANTIC = [

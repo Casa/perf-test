@@ -47,61 +47,57 @@ function getScriptHash(address) {
   let hash = bitcoin.crypto.sha256(script);
   let reversedHash = Buffer.from(hash.reverse())
 
-  // console.log(address, ' maps to ', reversedHash.toString('hex'))
-  // console.log('hash ' + hash.toString('hex'));
-  // console.log('reversed hash ' + reversedHash.toString('hex'));
-
   return reversedHash.toString('hex');
 }
 
 
 const main = async () => {
-    const ecl = new ElectrumCli(60001, '127.0.0.1', 'tcp') // tcp or tls
-    try {
-        await ecl.connect() // connect(promise)
-    } catch (e) {
-        console.log('Caught an error while connecting to Electrum');
-        console.log(e);
+  const ecl = new ElectrumCli(50001, '127.0.0.1', 'tcp');
+  try {
+      await ecl.connect();
+  } catch (e) {
+      console.log('Error connecting to Electrum:');
+      console.log(e);
+  }
+  try {
+    const ver = await ecl.server_version("CasaPerfTest", "1.4");
+    const fee = await ecl.blockchainEstimatefee(4)
+    console.log('server version:', ver);
+    console.log('fee estimate: ' + fee)
+    console.log()
+
+    //addresses = ADDRESSES_SMALL.concat(ADDRESSES_LARGE, ADDRESSES_GIGANTIC);
+    addresses = ADDRESSES_SMALL;
+    for (i = 0; i < addresses.length; i++) {
+      address = addresses[i];
+      console.log(`address: ${address}`);
+
+      const scriptHash = getScriptHash(address);
+
+      const getBalanceStart = new Date();
+      const balance = await ecl.blockchainScripthash_getBalance(scriptHash)
+      const getBalanceTime = new Date() - getBalanceStart;
+
+      const getTxHistoryStart = new Date();
+      const history = await ecl.blockchainScripthash_getHistory(scriptHash)
+      const getTxHistoryTime = new Date() - getTxHistoryStart;
+
+      const getUtxoStart = new Date();
+      const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
+      const getUtxoTime = new Date() - getUtxoStart;
+
+      console.log('balance: ', balance);
+      console.log('history count: ', history.length);
+      console.log('utxo count: ', unspent.length);
+      console.log('getBalance time: ', getBalanceTime);
+      console.log('getTxHistory time: ', getTxHistoryTime);
+      console.log('getUtxo time: ', getUtxoTime);
+      console.log()
     }
-    // ecl.subscribe.on('blockchain.headers.subscribe', (v) => console.log(v)) // subscribe message(EventEmitter)
-    try {
-        const ver = await ecl.server_version("CasaPerfTest", "1.4") // json-rpc(promise)
-        console.log('server version:', ver);
 
-        const fee = await ecl.blockchainEstimatefee(4)
-        console.log('fee estimate: ' + fee)
-
-        //const proof = await ecl.blockchainAddress_getProof("12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX")
-        //console.log(proof)
-
-        addresses = ADDRESSES_SMALL.concat(ADDRESSES_LARGE, ADDRESSES_GIGANTIC);
-        addresses.forEach(function(address) {
-          console.log(`address: ${address}`);
-
-          const scriptHash = getScriptHash(address);
-
-          const getBalanceStart = new Date();
-          const balance = await ecl.blockchainScripthash_getBalance(scriptHash)
-          const getBalanceTime = new Date() - getBalanceStart;
-          console.log('balance: ', balance);
-          console.log('getBalanceTime: ', getBalanceTime);
-
-          const getTxHistoryStart = new Date();
-          const history = await ecl.blockchainScripthash_getHistory(scriptHash)
-          const getTxHistoryTime = new Date() - getTxHistoryStart;
-          console.log('tx history: ', history);
-          console.log('getTxHistoryTime: ', getTxHistoryTime);
-
-          const getUtxoStart = new Date();
-          const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
-          const getUtxoTime = new Date() - getUtxoStart;
-          console.log('UTXOs: ', unspent);
-          console.log('getUtxoTime: ', getUtxoTime);
-        });
-
-    }catch(e){
-        console.log(e)
-    }
-    await ecl.close() // disconnect(promise)
+  } catch(e) {
+    console.log(e)
+  }
+  await ecl.close()
 }
 main()

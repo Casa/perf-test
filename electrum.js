@@ -8,7 +8,7 @@ const fs = require('fs')
 
 // Constants
 const ADDR_MAINNET = ['1AGyaDKdHWo8TcGADUCWd8JYXMQrky8Uko','3EBaaBxgShLxq8w2dDjhSfeb476wRScjKK'];
-const ADDR_TESTNET = ['2MsFEwgnorZrd6Eypb2L9cL4gdB4hHSpJMu','2MsFGJvxH1kCoRp3XEYvKduAjY6eYz9PJHz'];
+const ADDR_TESTNET = ['2MsFEwgnorZrd6Eypb2L9cL4gdB4hHSpJMu','2MsFPKF1QNDPcP5UHgHwqVXCF5esDaHQYRr'];
 const TESTNET_P2SH_P2WSH = {
   messagePrefix: '\x18Bitcoin Signed Message:\n',
   bech32: 'tb',

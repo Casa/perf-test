@@ -1,6 +1,7 @@
 const ElectrumCli = require('electrum-client')
 const bitcoin = require('bitcoinjs-lib')
 const yargs = require('yargs')
+const fs = require('fs')
 
 // Default configuration & constants
 
@@ -9,22 +10,12 @@ electrumPort = 50001
 electrumProto = 'tcp'
 electrumSsl = false
 electrumNetwork = 'mainnet'
-const ADDRESSES_SMALL = [
+addresses = [
   '1AGyaDKdHWo8TcGADUCWd8JYXMQrky8Uko',
   '3EBaaBxgShLxq8w2dDjhSfeb476wRScjKK',
   '3Fs5uFKJRshVoPfhbSrZ9Z4yg5F93b2qAg'
 ];
-const ADDRESSES_LARGE = [
-  '3C6qQDSRZVahLm5JryiF2zQFTeKzNQPfnH',
-  '16ftSEQ4ctQFDtVZiUBusQUjRrGhM3JYwe',
-  '35hK24tcLEWcgNA4JxpvbkNkoAcDGqQPsP',
-  '3Kzh9qAqVWQhEsfQz7zEQL1EuSx5tyNLNS',
-  '16FSBGvQfy4K8dYvPPWWpmzgKM6CvrCoVy',
-];
-const ADDRESSES_GIGANTIC = [
-  '1Ross5Np5doy4ajF9iGXzgKaC2Q3Pwwxv',
-  '1diceDCd27Cc22HV3qPNZKwGnZ8QwhLTc'
-];
+
 const TESTNET_P2SH_P2WSH = {
   messagePrefix: '\x18Bitcoin Signed Message:\n',
   bech32: 'tb',
@@ -63,6 +54,11 @@ const argv = yargs
     description: 'Use bitcoin testnet (default: false)',
     type: 'boolean'
   })
+  .option('addr', {
+    alias: 'a',
+    description: 'Address file',
+    type: 'string'
+  })
   .argv;
 
 if (argv.ssl) {
@@ -73,6 +69,7 @@ if (argv.ssl) {
 if (argv.host) electrumHost = argv.host;
 if (argv.port) electrumPort = argv.port;
 if (argv.testnet) electrumNetwork = 'testnet';
+if (argv.addr) addresses = readAddressFile(argv.addr);
 
 
 // Update configuration
@@ -81,7 +78,16 @@ if (electrumNetwork == 'testnet' && !electrumSsl) electrumPort = 60001;
 
 
 // Utility functions
-
+function readAddressFile(inputFile) {
+  console.log("Reading address list from file: ", inputFile);
+  try {
+    return fs.readFileSync(inputFile).toString().split("\n");
+  } catch(e) {
+    console.log("Error reading addresses file:")
+    console.log(e)
+    process.exit(1)
+  }
+}
 function kvOut(key, value) {
   console.log(key.toString().padEnd(20), value.toString().padStart(8))
 }
@@ -120,10 +126,9 @@ const main = async () => {
     console.log('fee estimate: ' + fee)
     console.log()
 
-    //addresses = ADDRESSES_SMALL.concat(ADDRESSES_LARGE, ADDRESSES_GIGANTIC);
-    addresses = ADDRESSES_SMALL;
     for (i = 0; i < addresses.length; i++) {
       address = addresses[i];
+      if (address == '') continue;
       console.log(`address: ${address}`);
 
       const scriptHash = getScriptHash(address);

@@ -50,6 +50,9 @@ function getScriptHash(address) {
   return reversedHash.toString('hex');
 }
 
+function kvOut(key, value) {
+  console.log(key.toString().padEnd(20), value.toString().padStart(8))
+}
 
 const main = async () => {
   const ecl = new ElectrumCli(50001, '127.0.0.1', 'tcp');
@@ -87,11 +90,11 @@ const main = async () => {
       const getUtxoTime = new Date() - getUtxoStart;
 
       console.log('balance: ', balance);
-      console.log('history count: ', history.length);
-      console.log('utxo count: ', unspent.length);
-      console.log('getBalance time: ', getBalanceTime);
-      console.log('getTxHistory time: ', getTxHistoryTime);
-      console.log('getUtxo time: ', getUtxoTime);
+      kvOut('history count: ', history.length);
+      kvOut('utxo count: ', unspent.length);
+      kvOut('getBalance time: ', getBalanceTime);
+      kvOut('getTxHistory time: ', getTxHistoryTime);
+      kvOut('getUtxo time: ', getUtxoTime);
       console.log()
     }
 

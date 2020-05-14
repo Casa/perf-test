@@ -3,6 +3,25 @@ const bitcoin = require('bitcoinjs-lib')
 
 // Run command: node electrumTest.js
 
+const ADDRESSES_SMALL = [
+  '1AGyaDKdHWo8TcGADUCWd8JYXMQrky8Uko',
+  '3EBaaBxgShLxq8w2dDjhSfeb476wRScjKK',
+  '3Fs5uFKJRshVoPfhbSrZ9Z4yg5F93b2qAg'
+];
+
+const ADDRESSES_LARGE = [
+  '16FSBGvQfy4K8dYvPPWWpmzgKM6CvrCoVy',
+  '35hK24tcLEWcgNA4JxpvbkNkoAcDGqQPsP',
+  '3Kzh9qAqVWQhEsfQz7zEQL1EuSx5tyNLNS',
+  '16ftSEQ4ctQFDtVZiUBusQUjRrGhM3JYwe',
+  '3C6qQDSRZVahLm5JryiF2zQFTeKzNQPfnH',
+];
+
+const ADDRESSES_GIGANTIC = [
+  '1Ross5Np5doy4ajF9iGXzgKaC2Q3Pwwxv',
+  '1diceDCd27Cc22HV3qPNZKwGnZ8QwhLTc'
+];
+
 const TESTNET_P2SH_P2WSH = {
   messagePrefix: '\x18Bitcoin Signed Message:\n',
   bech32: 'tb',
@@ -45,51 +64,40 @@ const main = async () => {
         console.log(e);
     }
     // ecl.subscribe.on('blockchain.headers.subscribe', (v) => console.log(v)) // subscribe message(EventEmitter)
-    try{
-        // const ver = await ecl.server_version("stacie-test", "1.4") // json-rpc(promise)
-        const ver = await ecl.server_version("2.7.11", "2.0") // json-rpc(promise)
+    try {
+        const ver = await ecl.server_version("CasaPerfTest", "1.4") // json-rpc(promise)
+        console.log('server version:', ver);
 
-        console.log('Electrs Version:');
-        console.log(ver) // returns the software version and the protocol version
-        console.log();
-
-        // const fee = await ecl.blockchainEstimatefee(4)
-        // console.log('fee estimate: ' + fee)
+        const fee = await ecl.blockchainEstimatefee(4)
+        console.log('fee estimate: ' + fee)
 
         //const proof = await ecl.blockchainAddress_getProof("12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX")
         //console.log(proof)
 
-        // const address  = '2MyAYcxeaee6MLZPMKL2hi1kK3BDB1FsheT';
-        const address = '3Bh9FJxq6Y4csLVP1C6Pbd3BVxXHeMnVzy';
-        console.log(`Using address ${address}`);
-        console.log();
-        const scriptHash = getScriptHash(address);
+        addresses = ADDRESSES_SMALL.concat(ADDRESSES_LARGE, ADDRESSES_GIGANTIC);
+        addresses.forEach(function(address) {
+          console.log(`address: ${address}`);
 
-        // const getBalanceStart = new Date();
-        // const balance = await ecl.blockchainScripthash_getBalance(scriptHash)
-        // const getBalanceTime = new Date() - getBalanceStart;
-        // console.log('Balance: ');
-        // console.log(balance);
-        // console.log();
+          const scriptHash = getScriptHash(address);
 
-        // const getTxHistoryStart = new Date();
-        // const history = await ecl.blockchainScripthash_getHistory(scriptHash)
-        // const getTxHistoryTime = new Date() - getTxHistoryStart;
-        // console.log('Electrum Transaction history');
-        // console.log(history)
-        // console.log();
+          const getBalanceStart = new Date();
+          const balance = await ecl.blockchainScripthash_getBalance(scriptHash)
+          const getBalanceTime = new Date() - getBalanceStart;
+          console.log('balance: ', balance);
+          console.log('getBalanceTime: ', getBalanceTime);
 
-        // console.log('Verbose Transaction');
-        // Unclear if the verbose param is actually getting picked up. See Keymaster for code that makes the call directly
-        // const transaction = await ecl.blockchainTransaction_get(history[0].tx_hash, true);
-        // console.log(transaction);
-        // console.log();
+          const getTxHistoryStart = new Date();
+          const history = await ecl.blockchainScripthash_getHistory(scriptHash)
+          const getTxHistoryTime = new Date() - getTxHistoryStart;
+          console.log('tx history: ', history);
+          console.log('getTxHistoryTime: ', getTxHistoryTime);
 
-        const getUtxoStart = new Date();
-        const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
-        const getUtxoTime = new Date() - getUtxoStart;
-        console.log('UTXOs:');
-        console.log(unspent)
+          const getUtxoStart = new Date();
+          const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
+          const getUtxoTime = new Date() - getUtxoStart;
+          console.log('UTXOs: ', unspent);
+          console.log('getUtxoTime: ', getUtxoTime);
+        });
 
     }catch(e){
         console.log(e)

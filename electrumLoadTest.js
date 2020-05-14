@@ -78,23 +78,27 @@ const main = async () => {
       const scriptHash = getScriptHash(address);
 
       const getBalanceStart = new Date();
-      const balance = await ecl.blockchainScripthash_getBalance(scriptHash)
-      const getBalanceTime = new Date() - getBalanceStart;
+      try {
+        const balance = await ecl.blockchainScripthash_getBalance(scriptHash)
+        const getBalanceTime = new Date() - getBalanceStart;
 
-      const getTxHistoryStart = new Date();
-      const history = await ecl.blockchainScripthash_getHistory(scriptHash)
-      const getTxHistoryTime = new Date() - getTxHistoryStart;
+        const getTxHistoryStart = new Date();
+        const history = await ecl.blockchainScripthash_getHistory(scriptHash)
+        const getTxHistoryTime = new Date() - getTxHistoryStart;
 
-      const getUtxoStart = new Date();
-      const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
-      const getUtxoTime = new Date() - getUtxoStart;
+        const getUtxoStart = new Date();
+        const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
+        const getUtxoTime = new Date() - getUtxoStart;
 
-      console.log('balance: ', balance);
-      kvOut('history count: ', history.length);
-      kvOut('utxo count: ', unspent.length);
-      kvOut('getBalance time: ', getBalanceTime);
-      kvOut('getTxHistory time: ', getTxHistoryTime);
-      kvOut('getUtxo time: ', getUtxoTime);
+        console.log('balance: ', balance);
+        kvOut('history count: ', history.length);
+        kvOut('utxo count: ', unspent.length);
+        kvOut('getBalance time: ', getBalanceTime);
+        kvOut('getTxHistory time: ', getTxHistoryTime);
+        kvOut('getUtxo time: ', getUtxoTime);
+      } catch(e) {
+        console.log('error: ', e)
+      }
       console.log()
     }
 

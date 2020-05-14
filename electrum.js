@@ -126,6 +126,9 @@ const main = async () => {
       console.log(e);
   }
   try {
+    addrCountTotal = 0;
+    addrCountErr = 0;
+
     const ver = await ecl.server_version("CasaPerfTest", "1.4");
     const fee = await ecl.blockchainEstimatefee(4)
     console.log('server version:', ver);
@@ -135,6 +138,7 @@ const main = async () => {
     for (i = 0; i < addresses.length; i++) {
       address = addresses[i];
       if (address == '') continue;
+      addrCountTotal++;
       console.log(`address: ${address}`);
 
       const scriptHash = getScriptHash(address);
@@ -159,10 +163,14 @@ const main = async () => {
         kvOut('getTxHistory time: ', getTxHistoryTime);
         kvOut('getUtxo time: ', getUtxoTime);
       } catch(e) {
+        addrCountErr++;
         console.log('error: ', e)
       }
       console.log()
     }
+
+    kvOut('Addresses tested', addrCountTotal);
+    kvOut('Addresses errored', addrCountErr);
 
   } catch(e) {
     console.log(e)

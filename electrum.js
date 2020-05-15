@@ -89,6 +89,12 @@ quietOutput = argv.quiet;
 compactOutput = argv.compact;
 
 addresses = readAddressFile(argv.addr);
+
+testBalance = argv.balance
+testHistory = argv.history
+testUtxo = argv.utxo
+testAll = (testBalance || testHistory || testUtxo) ? false : true;
+
 electrumHost = argv.host;
 electrumNetwork = (argv.testnet) ? 'testnet' : 'mainnet';
 electrumPort = setPort(electrumNetwork, argv.ssl, argv.port);
@@ -162,7 +168,13 @@ const main = async () => {
       console.log('server version:', ver);
       console.log('fee estimate: ' + fee)
       console.log()
-      if (compactOutput) console.log('address,txCount,utxoCount,balanceTime,txCountTime,utxoCountTime')
+      if (compactOutput) {
+        header = 'address'
+        if (testBalance || testAll) header += ',balanceTime';
+        if (testHistory || testAll) header += ',txCount,txCountTime';
+        if (testUtxo || testAll) header += ',utxoCount,utxoCountTime';
+        console.log(header)
+      }
     }
 
     for (i = 0; i < addresses.length; i++) {
@@ -172,37 +184,34 @@ const main = async () => {
       if (!compactOutput) console.log('address:', address);
 
       const scriptHash = getScriptHash(address);
+      result = address
 
       try {
-        const getBalanceStart = new Date();
-        const balance = await ecl.blockchainScripthash_getBalance(scriptHash)
-        const getBalanceTime = new Date() - getBalanceStart;
-
-        const getTxHistoryStart = new Date();
-        const history = await ecl.blockchainScripthash_getHistory(scriptHash)
-        const getTxHistoryTime = new Date() - getTxHistoryStart;
-
-        const getUtxoStart = new Date();
-        const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
-        const getUtxoTime = new Date() - getUtxoStart;
-
-        if (!compactOutput) {
-          console.log('balance:', balance);
-          kvOut('history count:', history.length);
-          kvOut('utxo count:', unspent.length);
-          kvOut('getBalance time:', getBalanceTime);
-          kvOut('getTxHistory time:', getTxHistoryTime);
-          kvOut('getUtxo time:', getUtxoTime);
-        } else {
-          console.log(
-            address + ',' +
-            history.length + ',' +
-            unspent.length + ',' +
-            getBalanceTime + ',' +
-            getTxHistoryTime + ',' +
-            getUtxoTime
-          );
+        if (testBalance || testAll ) {
+          const getBalanceStart = new Date()
+          const balance = await ecl.blockchainScripthash_getBalance(scriptHash)
+          const getBalanceTime = new Date() - getBalanceStart
+          result += ',' + getBalanceTime
+          if (!compactOutput) console.log('balance:', balance);
+          if (!compactOutput) vOut('balanceTime:', getBalanceTime);
         }
+        if (testHistory || testAll) {
+          const getTxHistoryStart = new Date();
+          const history = await ecl.blockchainScripthash_getHistory(scriptHash)
+          const getTxHistoryTime = new Date() - getTxHistoryStart;
+          result += ',' + history.length + ',' + getTxHistoryTime
+          if (!compactOutput) vOut('inputCount:', history.length);
+          if (!compactOutput) vOut('inputTime:', getTxHistoryTime);
+        }
+        if (testUtxo || testAll) {
+          const getUtxoStart = new Date();
+          const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
+          const getUtxoTime = new Date() - getUtxoStart;
+          result += ',' + unspent.length + ',' + getUtxoTime
+          if (!compactOutput) vOut('utxoCount:', unspent.length);
+          if (!compactOutput) vOut('utxoTime:', getUtxoTime);
+        }
+        if (compactOutput) console.log(result);
       } catch(e) {
         addrCountErr++;
         if (!compactOutput) console.log('error', e);

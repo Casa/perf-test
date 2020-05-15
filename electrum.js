@@ -19,26 +19,50 @@ const TESTNET_P2SH_P2WSH = {
 
 // Parse CLI parameters
 const argv = yargs
+  .group(['addr'], 'Input options:')
   .option('addr', {
     alias: 'a',
     description: 'Address file',
     type: 'string'
   })
-  .option('testnet', {
-    alias: 't',
-    description: 'Use bitcoin testnet',
+  .group(['compact','quiet'], 'Output options:')
+  .option('compact', {
+    description: 'Compact output, line per address',
     type: 'boolean',
     default: false
   })
+  .option('quiet', {
+    alias: 'q',
+    description: 'Suppress header & footer output',
+    type: 'boolean',
+    default: false
+  })
+  .group(['balance','history','utxo'], 'Tests to run:')
+  .option('balance', {
+    description: 'Measure balances',
+    type: 'boolean',
+    default: false
+  })
+  .option('history', {
+    descrption: 'Measure total inputs',
+    type: 'boolean',
+    default: false
+  })
+  .option('utxo', {
+    description: 'Measure UTXOs',
+    type: 'boolean',
+    default: false
+  })
+  .group(['host','port','ssl','testnet'], 'Electrum server options:')
   .option('host', {
     alias: 'H',
-    description: 'Electrum server hostname or IP',
+    description: 'Server hostname or IP',
     type: 'string',
     default: '127.0.0.1'
   })
   .option('port', {
-    alias: 'p',
-    description: 'Electrum server port',
+    alias: 'P',
+    description: 'Server port',
     type: 'string',
     default: '50001'
   })
@@ -48,14 +72,9 @@ const argv = yargs
     type: 'boolean',
     default: false
   })
-  .option('compact', {
-    description: 'Compact output, single-line per address',
-    type: 'boolean',
-    default: false
-  })
-  .option('quiet', {
-    alias: 'q',
-    description: 'Suppress header & footer output',
+  .option('testnet', {
+    alias: 't',
+    description: 'Use bitcoin testnet',
     type: 'boolean',
     default: false
   })

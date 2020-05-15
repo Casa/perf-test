@@ -193,23 +193,23 @@ const main = async () => {
           const getBalanceTime = new Date() - getBalanceStart
           result += ',' + getBalanceTime
           if (!compactOutput) console.log('balance:', balance);
-          if (!compactOutput) vOut('balanceTime:', getBalanceTime);
+          if (!compactOutput) kvOut('balanceTime:', getBalanceTime);
         }
         if (testHistory || testAll) {
           const getTxHistoryStart = new Date();
           const history = await ecl.blockchainScripthash_getHistory(scriptHash)
           const getTxHistoryTime = new Date() - getTxHistoryStart;
           result += ',' + history.length + ',' + getTxHistoryTime
-          if (!compactOutput) vOut('inputCount:', history.length);
-          if (!compactOutput) vOut('inputTime:', getTxHistoryTime);
+          if (!compactOutput) kvOut('inputCount:', history.length);
+          if (!compactOutput) kvOut('inputTime:', getTxHistoryTime);
         }
         if (testUtxo || testAll) {
           const getUtxoStart = new Date();
           const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
           const getUtxoTime = new Date() - getUtxoStart;
           result += ',' + unspent.length + ',' + getUtxoTime
-          if (!compactOutput) vOut('utxoCount:', unspent.length);
-          if (!compactOutput) vOut('utxoTime:', getUtxoTime);
+          if (!compactOutput) kvOut('utxoCount:', unspent.length);
+          if (!compactOutput) kvOut('utxoTime:', getUtxoTime);
         }
         if (compactOutput) console.log(result);
       } catch(e) {
@@ -220,7 +220,7 @@ const main = async () => {
     }
 
     if (!quietOutput) {
-      console.log();
+      if (compactOutput) console.log();
       kvOut('Addresses tested', addrCountTotal);
       kvOut('Addresses errored', addrCountErr);
     }

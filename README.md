@@ -45,7 +45,9 @@ node electrum.js --testnet
   <dt>addresses-large</dt>
   <dd>Addresses with 100 &lt; inputs &le; 1000 (5 addresses total)</dd>
   <dt>addresses-small</dt>
-  <dd>Addresses with &lt;100 inputs (3 addresses total)</dd>
+  <dd>Addresses with &le;100 inputs (3 addresses total)</dd>
+  <dt>addresses-100richest</dt>
+  <dd>Top 100 richest BTC addresses, as listed by bitinfocharts.com on 2020-05-15</dd>
 </dl>
 
 ### Testnet

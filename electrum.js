@@ -88,18 +88,18 @@ const argv = yargs
 quietOutput = argv.quiet;
 compactOutput = argv.compact;
 
+electrumHost = argv.host;
+electrumNetwork = (argv.testnet) ? 'testnet' : 'mainnet';
+electrumPort = setPort(electrumNetwork, argv.ssl, argv.port);
+electrumProto = 'tcp'
+electrumSsl = argv.ssl;
+
 addresses = readAddressFile(argv.addr);
 
 testBalance = argv.balance
 testHistory = argv.history
 testUtxo = argv.utxo
 testAll = (testBalance || testHistory || testUtxo) ? false : true;
-
-electrumHost = argv.host;
-electrumNetwork = (argv.testnet) ? 'testnet' : 'mainnet';
-electrumPort = setPort(electrumNetwork, argv.ssl, argv.port);
-electrumProto = 'tcp'
-electrumSsl = argv.ssl;
 
 
 // Utility functions

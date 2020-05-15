@@ -5,12 +5,26 @@ npm install
 
 ## Usage
 
-  -  Print help: `node electrum.js -h`
-  -  Sample mainnet config: `node electrum.js`
-  -  Sample testnet config: `node electrum.js --testnet`
-  -  Large mainnet addresses: `node electrum.js -a data/mainnet/addresses-large`
-  -  All testnet addresses: `node electrum.js --testnet -a data/mainnet/addresses-all_0-135500`
+### Display help
 
-## TODO
-  - end to end time
-  - specify compact output format
+```
+node electrum.js -h
+```
+
+### Test connection using sample data
+```
+node electrum.js [-H <electrum_host>] [-P <electrum_port>]
+node electrum.js --testnet
+```
+
+### Examples using included datasets
+```
+# Measure UTXO count & corresponding request duration
+#  for mainnet addresses w/many inputs/UTXOs:
+node electrum.js --addr data/mainnet/addresses-large --utxo --compact
+
+# Measure input count & corresponding request duration
+#  for addresses w/100 or fewer inputs in first 135500
+#  testnet blocks:
+node electrum.js --testnet -a data/mainnet/addresses-all_0-135500
+```

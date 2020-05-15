@@ -37,18 +37,18 @@ const argv = yargs
     type: 'boolean',
     default: false
   })
-  .group(['balance','history','utxo'], 'Tests to run:')
-  .option('balance', {
-    description: 'Measure balances',
+  .group(['get_balance','get_history','listunspent'], 'Tests to run:')
+  .option('get_balance', {
+    description: 'Measure balance lookup',
     type: 'boolean',
     default: false
   })
-  .option('history', {
+  .option('get_history', {
     descrption: 'Measure total inputs',
     type: 'boolean',
     default: false
   })
-  .option('utxo', {
+  .option('listunspent', {
     description: 'Measure UTXOs',
     type: 'boolean',
     default: false
@@ -96,10 +96,10 @@ electrumSsl = argv.ssl;
 
 addresses = readAddressFile(argv.addr);
 
-testBalance = argv.balance
-testHistory = argv.history
-testUtxo = argv.utxo
-testAll = (testBalance || testHistory || testUtxo) ? false : true;
+testBalance = argv.get_balance
+testHistory = argv.get_history
+testUnspent = argv.listunspent
+testAll = (testBalance || testHistory || testUnspent) ? false : true;
 
 
 // Utility functions
@@ -170,9 +170,9 @@ const main = async () => {
       console.log()
       if (compactOutput) {
         header = 'address'
-        if (testBalance || testAll) header += ',balanceTime';
-        if (testHistory || testAll) header += ',txCount,txCountTime';
-        if (testUtxo || testAll) header += ',utxoCount,utxoCountTime';
+        if (testBalance || testAll) header += ',get_balanceTime';
+        if (testHistory || testAll) header += ',get_historyCount,get_historyTime';
+        if (testUnspent || testAll) header += ',listunspentCount,listunspentTime';
         console.log(header)
       }
     }
@@ -188,28 +188,28 @@ const main = async () => {
 
       try {
         if (testBalance || testAll ) {
-          const getBalanceStart = new Date()
-          const balance = await ecl.blockchainScripthash_getBalance(scriptHash)
-          const getBalanceTime = new Date() - getBalanceStart
-          result += ',' + getBalanceTime
-          if (!compactOutput) console.log('balance:', balance);
-          if (!compactOutput) kvOut('balanceTime:', getBalanceTime);
+          const get_balanceStart = new Date()
+          const get_balance = await ecl.blockchainScripthash_getBalance(scriptHash)
+          const get_balanceTime = new Date() - get_balanceStart
+          result += ',' + get_balanceTime
+          if (!compactOutput) console.log('get_balance result:', get_balance);
+          if (!compactOutput) kvOut('get_balance time:', get_balanceTime);
         }
         if (testHistory || testAll) {
-          const getTxHistoryStart = new Date();
-          const history = await ecl.blockchainScripthash_getHistory(scriptHash)
-          const getTxHistoryTime = new Date() - getTxHistoryStart;
-          result += ',' + history.length + ',' + getTxHistoryTime
-          if (!compactOutput) kvOut('inputCount:', history.length);
-          if (!compactOutput) kvOut('inputTime:', getTxHistoryTime);
+          const get_historyStart = new Date();
+          const get_history = await ecl.blockchainScripthash_getHistory(scriptHash)
+          const get_historyTime = new Date() - get_historyStart;
+          result += ',' + get_history.length + ',' + get_historyTime
+          if (!compactOutput) kvOut('get_history count:', get_history.length);
+          if (!compactOutput) kvOut('get_history time:', get_historyTime);
         }
-        if (testUtxo || testAll) {
-          const getUtxoStart = new Date();
+        if (testUnspent || testAll) {
+          const listunspentStart = new Date();
           const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
-          const getUtxoTime = new Date() - getUtxoStart;
-          result += ',' + unspent.length + ',' + getUtxoTime
-          if (!compactOutput) kvOut('utxoCount:', unspent.length);
-          if (!compactOutput) kvOut('utxoTime:', getUtxoTime);
+          const listunspentTime = new Date() - listunspentStart;
+          result += ',' + unspent.length + ',' + listunspentTime
+          if (!compactOutput) kvOut('listunspent count:', unspent.length);
+          if (!compactOutput) kvOut('listunspent time:', listunspentTime);
         }
         if (compactOutput) console.log(result);
       } catch(e) {

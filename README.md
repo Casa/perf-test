@@ -21,10 +21,10 @@ node electrum.js --testnet
 ```
 # Measure UTXO count & corresponding request duration
 #  for mainnet addresses w/many inputs/UTXOs:
-node electrum.js --addr data/mainnet/addresses-large --utxo --compact
+node electrum.js --addr data/mainnet/addresses-large --listunspent --compact
 
-# Measure input count & corresponding request duration
-#  for addresses w/100 or fewer inputs in first 135500
-#  testnet blocks:
-node electrum.js --testnet -a data/mainnet/addresses-all_0-135500
+# Measure historical input count & corresponding request duration
+#  for testnet addresses w/100 or fewer inputs
+#  in first 135500 blocks:
+node electrum.js --testnet --addr data/testnet/addresses-all_0-135500 --get_history
 ```

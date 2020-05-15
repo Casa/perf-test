@@ -123,17 +123,12 @@ function readAddressFile(inputFile) {
 function kvOut(key, value) {
   console.log(key.toString().padEnd(20), value.toString().padStart(8))
 }
-function compactOut(addr, ) {
-  // TODO: csv concat
-  //console.log(key.toString().padEnd(20), value.toString().padStart(8))
-}
 
 function getScriptHash(address) {
-
   let network;
 
-  if (address.startsWith('2') || address.startsWith('tb1')
-  || address.startsWith('m') || address.startsWith('n')) {
+  if (address.startsWith('2') || address.startsWith('tb1') ||
+    address.startsWith('m') || address.startsWith('n')) {
     network = TESTNET_P2SH_P2WSH;
   }
 

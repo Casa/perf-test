@@ -5,7 +5,6 @@ const bitcoin = require('bitcoinjs-lib')
 const yargs = require('yargs')
 const fs = require('fs')
 
-
 // Constants
 const ADDR_MAINNET = ['1AGyaDKdHWo8TcGADUCWd8JYXMQrky8Uko','3EBaaBxgShLxq8w2dDjhSfeb476wRScjKK'];
 const ADDR_TESTNET = ['2MsFEwgnorZrd6Eypb2L9cL4gdB4hHSpJMu','2MsFPKF1QNDPcP5UHgHwqVXCF5esDaHQYRr'];
@@ -17,16 +16,6 @@ const TESTNET_P2SH_P2WSH = {
   scriptHash: 0xc4,
   wif: 0xef,
 };
-
-// Default configuration
-electrumHost = '127.0.0.1'
-electrumPort = 50001
-electrumProto = 'tcp'
-electrumSsl = false
-electrumNetwork = 'mainnet'
-compactOutput = false
-quietOutput = false
-addresses = ADDR_MAINNET
 
 // Parse CLI parameters
 const argv = yargs
@@ -76,29 +65,32 @@ const argv = yargs
   .showHelpOnFail(true, 'Specify --help for available options')
   .argv;
 
-if (argv.ssl) {
-  //electrumSsl = true;
-  console.log("ssl not yet supported")
-  process.exit()
-}
-if (argv.host) electrumHost = argv.host;
-if (argv.port) electrumPort = argv.port;
-if (argv.testnet) electrumNetwork = 'testnet';
-if (argv.addr) addressFile = argv.addr;
-if (argv.compact) compactOutput = argv.compact;
-if (argv.quiet) quietOutput = argv.quiet;
-
-
 // Update configuration
-if (electrumNetwork == 'testnet') {
-  if (!electrumSsl) electrumPort = 60001;
-  addresses = ADDR_TESTNET;
-}
-if (addressFile) addresses = readAddressFile(argv.addr);
+quietOutput = argv.quiet;
+compactOutput = argv.compact;
+
+addresses = readAddressFile(argv.addr);
+electrumHost = argv.host;
+electrumNetwork = (argv.testnet) ? 'testnet' : 'mainnet';
+electrumPort = setPort(electrumNetwork, argv.ssl, argv.port);
+electrumProto = 'tcp'
+electrumSsl = argv.ssl;
 
 
 // Utility functions
+
+function setPort(electrumNetwork, electrumSsl, electrumPort) {
+  if (electrumPort) return electrumPort;
+  if (electrumSsl) {
+    return electrumPort = (electrumNetwork == 'mainnet') ? '50002' : '60002';
+    console.log("ssl not yet supported")
+    process.exit()
+  }
+  return electrumPort = (electrumNetwork == 'mainnet') ? '50001' : '60001';
+}
+
 function readAddressFile(inputFile) {
+  if (!inputFile) return (electrumNetwork == 'mainnet') ? ADDR_MAINNET : ADDR_TESTNET;
   if (!quietOutput) console.log("Reading address list from file: ", inputFile);
   try {
     return fs.readFileSync(inputFile).toString().split("\n");

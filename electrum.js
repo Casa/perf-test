@@ -152,7 +152,7 @@ const main = async () => {
   if (!quietOutput) console.log("Connecting to Electrum server: ", electrumHost, ":", electrumPort);
   const ecl = new ElectrumCli(electrumHost, electrumPort, electrumProto);
   try {
-      await ecl.connect();
+      await ecl.connect('CasaPerfTest', '1.4.2');
   } catch (e) {
       console.log('Error connecting to Electrum:');
       console.log(e);

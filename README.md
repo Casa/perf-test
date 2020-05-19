@@ -61,6 +61,8 @@ bitcoind -blocknotify="./address_dump.sh | sort | uniq >> addresses.txt" ...
 <dl>
   <dt>addresses_600000-600010</dt>
   <dd>All addresses from blocks 600,000 to 600,010, sorted and deduplicated (38,925 lines)</dd>
+  <dt>addresses_600000-600110.gz</dt>
+  <dd>All addresses from blocks 600,000 to 600,110 in block order, no sorting or dedup, `gunzip` to use (457,128 lines / 391,705 unique addresses)</dd>
   <dt>addresses-gigantic</dt>
   <dd>Addresses with &gt;1000 inputs, including "Satoshi Dice" (500k tx) and "Free Ross donation" (3472 tx)</dd>
   <dt>addresses-large</dt>

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const ElectrumCli = require('electrum-client')
+const ElectrumCli = require('electrum-client-js')
 const bitcoin = require('bitcoinjs-lib')
 const yargs = require('yargs')
 const fs = require('fs')
@@ -150,7 +150,7 @@ function getScriptHash(address) {
 
 const main = async () => {
   if (!quietOutput) console.log("Connecting to Electrum server: ", electrumHost, ":", electrumPort);
-  const ecl = new ElectrumCli(electrumPort, electrumHost, electrumProto);
+  const ecl = new ElectrumCli(electrumHost, electrumPort, electrumProto);
   try {
       await ecl.connect();
   } catch (e) {
@@ -189,7 +189,7 @@ const main = async () => {
       try {
         if (testBalance || testAll ) {
           const get_balanceStart = new Date()
-          const get_balance = await ecl.blockchainScripthash_getBalance(scriptHash)
+          const get_balance = await ecl.blockchain_scripthash_getBalance(scriptHash)
           const get_balanceTime = new Date() - get_balanceStart
           result += ',' + get_balanceTime
           if (!compactOutput) console.log('get_balance result:', get_balance);
@@ -197,7 +197,7 @@ const main = async () => {
         }
         if (testHistory || testAll) {
           const get_historyStart = new Date();
-          const get_history = await ecl.blockchainScripthash_getHistory(scriptHash)
+          const get_history = await ecl.blockchain_scripthash_getHistory(scriptHash)
           const get_historyTime = new Date() - get_historyStart;
           result += ',' + get_history.length + ',' + get_historyTime
           if (!compactOutput) kvOut('get_history count:', get_history.length);
@@ -205,7 +205,7 @@ const main = async () => {
         }
         if (testUnspent || testAll) {
           const listunspentStart = new Date();
-          const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
+          const unspent = await ecl.blockchain_scripthash_listunspent(scriptHash)
           const listunspentTime = new Date() - listunspentStart;
           result += ',' + unspent.length + ',' + listunspentTime
           if (!compactOutput) kvOut('listunspent count:', unspent.length);

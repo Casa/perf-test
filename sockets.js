@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const ElectrumCli = require('electrum-client')
+const ElectrumCli = require('electrum-client-js')
 const bitcoin = require('bitcoinjs-lib')
 
 const openSockets = [];
@@ -35,14 +35,14 @@ const main = async () => {
   const testStartTime = new Date();
 
   for (let i = 0; i < 100; i++) {
-    const ecl = new ElectrumCli(electrumPort, electrumHost, electrumProto);
+    const ecl = new ElectrumCli(electrumHost, electrumPort, electrumProto);
     await ecl.connect();
 
     openSockets.push(ecl);
   
     // Fire off the get balance call but don't wait for it before continuing the loop.
     const get_balanceStart = new Date();
-    const get_balancePromise = ecl.blockchainScripthash_getBalance(scriptHash).then(() => {
+    const get_balancePromise = ecl.blockchain_scripthash_getBalance(scriptHash).then(() => {
       const get_balanceTime = new Date() - get_balanceStart
       console.log('get_balance time:', get_balanceTime);
     })

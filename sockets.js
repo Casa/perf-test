@@ -32,6 +32,8 @@ function getScriptHash(address) {
 const main = async () => {
   const scriptHash = getScriptHash(ADDR_MAINNET);
   
+  const testStartTime = new Date();
+
   for (let i = 0; i < 100; i++) {
     const ecl = new ElectrumCli(electrumPort, electrumHost, electrumProto);
     await ecl.connect();
@@ -53,15 +55,19 @@ const main = async () => {
   
   // Wait for all the promises to finish.
   // Note that with Promise.all, if one promise fails, the result of Promise.all fails
-  console.log('waiting for all promises to finish');
+  console.log(`Created ${promises.length} promises. Now waiting for them to finish`);
   await Promise.all(promises);
-  console.log('all promises finished');
-  
+  const promisesTime = new Date() - testStartTime;
+  console.log(`All promises finished. Promises took ${promisesTime} seconds.`);
+
   // Close up all the sockets
   openSockets.forEach(socket => {
     socket.close;
   });
   console.log('all sockets closed');
+  const totalTestTime = new Date() - testStartTime;
+  console.log(`Total test time: ${totalTestTime}`);
+
   process.exit();
 }
 main()

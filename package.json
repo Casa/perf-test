@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "bitcoinjs-lib": "^5.1.7",
-    "electrum-client-js": "git+https://github.com/keep-network/electrum-client-js.git#c1de4f26583e2e236b5c956534ed3db6c108f1ae",
+    "electrum-client-js": "git+https://github.com/thinkmassive/electrum-client-js.git#3d4cf4716686c899ebed22d8e9b32b0d551e8a5f",
     "yargs": "^15.3.1"
   }
 }

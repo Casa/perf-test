@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const ElectrumCli = require('electrum-client')
-const bitcoin = require('bitcoinjs-lib')
+const { setPort, readAddressFile, kvOut, getScriptHash } = require('./lib/utils')
 
 const openSockets = [];
 const promises = [];
@@ -14,20 +14,8 @@ const ADDR_MAINNET = '1AGyaDKdHWo8TcGADUCWd8JYXMQrky8Uko';
 //const ADDR_MAINNET = '3EBaaBxgShLxq8w2dDjhSfeb476wRScjKK';
 //const ADDR_TESTNET = '2MsFEwgnorZrd6Eypb2L9cL4gdB4hHSpJMu';
 
-function getScriptHash(address) {
-  let network;
 
-  if (address.startsWith('2') || address.startsWith('tb1') ||
-    address.startsWith('m') || address.startsWith('n')) {
-    network = TESTNET_P2SH_P2WSH;
-  }
-
-  let script = bitcoin.address.toOutputScript(address, network);
-  let hash = bitcoin.crypto.sha256(script);
-  let reversedHash = Buffer.from(hash.reverse())
-
-  return reversedHash.toString('hex');
-}
+// Main
 
 const main = async () => {
   const scriptHash = getScriptHash(ADDR_MAINNET);

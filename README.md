@@ -35,6 +35,25 @@ node electrum.js --testnet
   - `--ssl` use TLS (not yet implemented)
   - `--testnet` use testnet (default is to use mainnet)
 
+## Address extraction script
+
+This script displays all non-null output addresses from a single block. It optionally accepts a single parameter, which is the block number to use, otherwise it uses the latest block. Does not do any sorting or filtering.
+
+Recommended batch usage:
+```
+start_block=600000
+end_block=600100
+for block in $(seq $start_block $end_block); do
+  ./address_dump.sh $block | sort | uniq >> addresses_${start_block}-${end_block}.txt
+done
+sort addresses_${start_block}-${end_block}.txt | uniq > addresses.txt
+```
+
+Recommended blocknotify usage:
+```
+bitcoind -blocknotify="./address_dump.sh | sort | uniq >> addresses.txt" ...
+```
+
 ## Bundled datasets
 
 ### Mainnet

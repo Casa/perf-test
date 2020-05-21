@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const config = require('./lib/config').parse(process.argv)
-const { setPort, readAddressFile, kvOut, getScriptHash } = require('./lib/utils')
+const { setPort, readAddressFile, getScriptHash } = require('./lib/utils')
 
 const ElectrumCli = require('electrum-client')
 
@@ -77,7 +77,7 @@ const main = async () => {
           result += ',' + get_balanceTime
           if (verbose > 1) {
             console.log('get_balance result:', get_balance);
-            kvOut('get_balance time:', get_balanceTime);
+            console.log('get_balance time:', get_balanceTime);
           }
         }
         if (testHistory || testAll) {

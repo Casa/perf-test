@@ -20,8 +20,8 @@ node electrum.js --testnet
   - `--addr <address_file>` expects a file with one address per line
 
 ### Output options
-  - `--compact` lists all metrics on a single line per address, comma separated
-  - `--quiet` suppresses headers and footers
+  - `--verbose` verbose output, -vvv to increase level
+  - `--quiet` suppresses all non-data output, overrides -v
 
 ### Measurements to run
   - `get_balance` measures time (ms) to complete the [get_balance](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-get-balance) query

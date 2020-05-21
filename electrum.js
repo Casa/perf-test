@@ -15,7 +15,7 @@ electrumPort = setPort(electrumNetwork, config.ssl, config.port);
 electrumProto = 'tcp'
 electrumSsl = config.ssl;
 
-let addresses;
+let addresses = [];
 const ADDR_MAINNET = ['1AGyaDKdHWo8TcGADUCWd8JYXMQrky8Uko','3EBaaBxgShLxq8w2dDjhSfeb476wRScjKK'];
 const ADDR_TESTNET = ['2MsFEwgnorZrd6Eypb2L9cL4gdB4hHSpJMu','2MsFPKF1QNDPcP5UHgHwqVXCF5esDaHQYRr'];
 
@@ -32,7 +32,6 @@ testHistory = config.get_history
 testUnspent = config.listunspent
 testAll = (testBalance || testHistory || testUnspent) ? false : true;
 
-
 // Main
 
 const main = async () => {
@@ -45,8 +44,8 @@ const main = async () => {
       process.exit(1);
   }
   try {
-    addrCountTotal = 0;
-    addrCountErr = 0;
+    let addrTotal = addresses.length;
+    let addrErr = [];
 
     const ver = await ecl.server_version("CasaPerfTest", "1.4");
     const fee = await ecl.blockchainEstimatefee(4)
@@ -62,11 +61,10 @@ const main = async () => {
     if (testUnspent || testAll) header += ',listunspentCount,listunspentTime';
     console.log(header)
 
-    for (i = 0; i < addresses.length; i++) {
-      address = addresses[i];
+    while (addresses.length) {
+      address = addresses.pop();
       if (address == '') continue;
-      addrCountTotal++;
-      if (verbose > 1) console.log(`address: ${address}`);
+      if (verbose > 1) console.log(`\naddress: ${address}`);
 
       const scriptHash = getScriptHash(address);
       let result = 'address';
@@ -104,14 +102,13 @@ const main = async () => {
         }
         if (verbose < 2) console.log(result);
       } catch(e) {
-        addrCountErr++;
-        if (verbose) console.log('error', e);
+        addrErr.push(e);
       }
     }
 
     if (!quiet) {
-      console.error(`\nAddresses tested: ${addrCountTotal}`);
-      console.error(`Addresses errored: ${addrCountErr}\n`);
+      console.error(`\nAddresses tested: ${addrTotal}`);
+      console.error(`Addresses errored: ${addrErr.length}\n`);
     }
 
   } catch(e) {

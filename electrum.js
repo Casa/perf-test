@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const config = require('./lib/config').parse(process.argv)
-const { setPort, readAddressFile, getScriptHash } = require('./lib/utils')
+const { setPort, readAddressFile, run_measurement } = require('./lib/utils')
 
 const ElectrumCli = require('electrum-client')
 
@@ -56,7 +56,7 @@ const main = async () => {
     if (!quiet) console.error();
 
     let header = 'address'
-    if (testBalance || testAll) header += ',get_balanceTime';
+    if (testBalance || testAll) header += ',get_balanceConfirmed,get_balanceUnconfirmed,get_balanceTime';
     if (testHistory || testAll) header += ',get_historyCount,get_historyTime';
     if (testUnspent || testAll) header += ',listunspentCount,listunspentTime';
     console.log(header)
@@ -64,46 +64,51 @@ const main = async () => {
     while (addresses.length) {
       address = addresses.pop();
       if (address == '') continue;
-      if (verbose > 1) console.log(`\naddress: ${address}`);
+      //if (verbose > 1) console.log(`\naddress: ${address}`);
 
-      const scriptHash = getScriptHash(address);
-      let result = 'address';
+      //const scriptHash = getScriptHash(address);
+      //let result = 'address';
 
-      try {
-        if (testBalance || testAll ) {
-          const get_balanceStart = new Date()
-          const get_balance = await ecl.blockchainScripthash_getBalance(scriptHash)
-          const get_balanceTime = new Date() - get_balanceStart
-          result += ',' + get_balanceTime
-          if (verbose > 1) {
-            console.log('get_balance result:', get_balance);
-            console.log('get_balance time:', get_balanceTime);
-          }
-        }
-        if (testHistory || testAll) {
-          const get_historyStart = new Date();
-          const get_history = await ecl.blockchainScripthash_getHistory(scriptHash)
-          const get_historyTime = new Date() - get_historyStart;
-          result += address + ',' + get_history.length + ',' + get_historyTime
-          if (verbose > 1) {
-            console.log(`get_history count: ${get_history.length}`);
-            console.log(`get_history time: ${get_historyTime}`);
-          }
-        }
-        if (testUnspent || testAll) {
-          const listunspentStart = new Date();
-          const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
-          const listunspentTime = new Date() - listunspentStart;
-          result += ',' + unspent.length + ',' + listunspentTime
-          if (verbose > 1) {
-            console.log(`listunspent count: ${unspent.length}`);
-            console.log(`listunspent time: ${listunspentTime}`);
-          }
-        }
-        if (verbose < 2) console.log(result);
-      } catch(e) {
-        addrErr.push(e);
-      }
+      //try {
+        //if (testBalance || testAll ) {
+        //  const get_balanceStart = new Date()
+        //  const get_balance = await ecl.blockchainScripthash_getBalance(scriptHash)
+        //  const get_balanceTime = new Date() - get_balanceStart
+        //  result += ',' + get_balanceTime
+        //  if (verbose > 1) {
+        //    console.log('get_balance result:', get_balance);
+        //    console.log('get_balance time:', get_balanceTime);
+        //  }
+        //}
+        //if (testHistory || testAll) {
+        //  const get_historyStart = new Date();
+        //  const get_history = await ecl.blockchainScripthash_getHistory(scriptHash)
+        //  const get_historyTime = new Date() - get_historyStart;
+        //  result += address + ',' + get_history.length + ',' + get_historyTime
+        //  if (verbose > 1) {
+        //    console.log(`get_history count: ${get_history.length}`);
+        //    console.log(`get_history time: ${get_historyTime}`);
+        //  }
+        //}
+        //if (testUnspent || testAll) {
+        //  const listunspentStart = new Date();
+        //  const unspent = await ecl.blockchainScripthash_listunspent(scriptHash)
+        //  const listunspentTime = new Date() - listunspentStart;
+        //  result += ',' + unspent.length + ',' + listunspentTime
+        //  if (verbose > 1) {
+        //    console.log(`listunspent count: ${unspent.length}`);
+        //    console.log(`listunspent time: ${listunspentTime}`);
+        //  }
+        //}
+        //if (verbose < 2) console.log(result);
+      //} catch(e) {
+      //  addrErr.push(e);
+      //}
+      await run_measurement(ecl, address);
+      //.then(
+      //  result => console.log(result),
+      //  error => console.error(error)
+      //);
     }
 
     if (!quiet) {

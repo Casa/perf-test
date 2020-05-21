@@ -20,7 +20,7 @@ node electrum.js --testnet
   - `--addr <address_file>` expects a file with one address per line
 
 ### Output options
-  - `--compact` lists all metrics on a single line per address, comma separated
+  - `--verbose` verbose output, -vv to increase level
   - `--quiet` suppresses headers and footers
 
 ### Measurements to run

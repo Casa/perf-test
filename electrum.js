@@ -23,8 +23,13 @@ if (config.addr) {
   if (verbose) console.error(`\nReading address list from file: ${config.addr}`);
   addresses = readAddressFile(config.addr);
 } else {
-  if (verbose) console.error('\nUsing built-in test addresses');
-  addresses = (electrumNetwork == 'mainnet') ? ADDR_MAINNET : ADDR_TESTNET;
+  if (electrumNetwork == 'mainnet') {
+    if (verbose) console.error('\nUsing built-in mainnet addresses');
+    addresses = ADDR_MAINNET
+  } else {
+    if (verbose) console.error('\nUsing built-in testnet addresses');
+    addresses = ADDR_TESTNET
+  }
 }
 
 testBalance = config.get_balance

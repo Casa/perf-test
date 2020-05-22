@@ -32,8 +32,8 @@ node electrum.js --testnet
 ### Electrum server options
   - `--host` hostname or IP
   - `--port` port (defaults to 50001 for mainnet, 60001 for testnet)
-  - `--ssl` use TLS (not yet implemented)
   - `--testnet` use testnet (default is to use mainnet)
+  - `--sockets <num>` use pool of &lt;num&gt; sockets
 
 ## Address extraction script
 

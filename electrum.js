@@ -15,6 +15,10 @@ electrumPort = setPort(electrumNetwork, config.ssl, config.port);
 electrumProto = 'tcp'
 electrumSsl = config.ssl;
 
+socketCount = config.socket_count;
+socketPool = [];
+socketPromise = [];
+
 let addresses = [];
 const ADDR_MAINNET = ['1AGyaDKdHWo8TcGADUCWd8JYXMQrky8Uko','3EBaaBxgShLxq8w2dDjhSfeb476wRScjKK'];
 const ADDR_TESTNET = ['2MsFEwgnorZrd6Eypb2L9cL4gdB4hHSpJMu','2MsFPKF1QNDPcP5UHgHwqVXCF5esDaHQYRr'];

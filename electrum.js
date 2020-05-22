@@ -32,10 +32,9 @@ if (config.addr) {
   }
 }
 
-testBalance = config.get_balance
-testHistory = config.get_history
-testUnspent = config.listunspent
-testAll = (testBalance || testHistory || testUnspent) ? false : true;
+measurement = config.measure_options;
+measurement.all = !Object.values(measurement).some(Boolean);
+if (verbose > 2) console.log('measurement:', measurement);
 
 // Main
 
@@ -61,9 +60,9 @@ const main = async () => {
     if (!quiet) console.error();
 
     let header = 'address'
-    if (testBalance || testAll) header += ',get_balanceConfirmed,get_balanceUnconfirmed,get_balanceTime';
-    if (testHistory || testAll) header += ',get_historyCount,get_historyTime';
-    if (testUnspent || testAll) header += ',listunspentCount,listunspentTime';
+    if (measurement.get_balance || measurement.all) header += ',get_balanceConfirmed,get_balanceUnconfirmed,get_balanceTime';
+    if (measurement.get_history || measurement.all) header += ',get_historyCount,get_historyTime';
+    if (measurement.listunspent || measurement.all) header += ',listunspentCount,listunspentTime';
     console.log(header)
 
     while (addresses.length) {
@@ -109,7 +108,7 @@ const main = async () => {
       //} catch(e) {
       //  addrErr.push(e);
       //}
-      await run_measurement(ecl, address);
+      await run_measurement(ecl, address, measurement);
       //.then(
       //  result => console.log(result),
       //  error => console.error(error)

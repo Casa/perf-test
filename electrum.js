@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const config = require('./lib/config').parse(process.argv)
-const { setPort, readAddressFile, run_measurement } = require('./lib/utils')
+const { getPort, readAddressFile, run_measurement } = require('./lib/utils')
 
 const ElectrumCli = require('electrum-client')
 
@@ -11,7 +11,7 @@ const verbose = (quiet) ? 0 : config.output_verbose;
 
 electrumHost = config.host;
 electrumNetwork = (config.testnet) ? 'testnet' : 'mainnet';
-electrumPort = setPort(electrumNetwork, config.ssl, config.port);
+electrumPort = getPort(electrumNetwork, config.ssl, config.port);
 electrumProto = 'tcp'
 electrumSsl = config.ssl;
 

@@ -24,9 +24,9 @@ node electrum.js --testnet
   - `--quiet` suppresses all non-data output, overrides -v
 
 ### Measurements to run
-  - `get_balance` measures time (ms) to complete the [get_balance](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-get-balance) query
-  - `get_history` counts total inputs and measures time (ms) to complete the [get_history](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-get-history) query
-  - `listunspent` counts current UTXOs and measures time (ms) to complete the [listunspent](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-listunspent) query
+  - `--get_balance` measures time (ms) to complete the [get_balance](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-get-balance) query
+  - `--get_history` counts total inputs and measures time (ms) to complete the [get_history](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-get-history) query
+  - `--listunspent` counts current UTXOs and measures time (ms) to complete the [listunspent](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-listunspent) query
   - If no measurements are specified then all measurements will run
 
 ### Electrum server options

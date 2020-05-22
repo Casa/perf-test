@@ -71,7 +71,9 @@ const main = async () => {
     for (let i = 0; i < socketPool.length; i++) {
       try {
         let address = addresses.pop();
+        if (verbose > 1) console.error(`Adding ${address} to socketPool[${i}]`);
         socketPromises.push(run_measurement(socketPool[i], address, measurement));
+        if (verbose > 2) console.error(`       ${address} added to socketPool[${i}]`);
         if (addresses.length == 0) break;
       } catch (e) {
         addrErr++;
@@ -79,7 +81,7 @@ const main = async () => {
       }
     }
   }
-  if(verbose) console.log(`Created ${socketPromises.length} promises. Now waiting for them to finish`);
+  if(verbose) console.log(`Created ${socketPromises.length} promises. Now waiting for them to finish\n`);
 
   // Print header
   let header = 'address'

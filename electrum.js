@@ -94,7 +94,7 @@ const main = async () => {
   // Print summary
   if (!quiet) {
     console.error(`\nAddresses tested: ${addrTotal}`);
-    console.error(`Addresses errored: ${addrErr.length}\n`);
+    console.error(`Addresses errored: ${addrErr}\n`);
   }
 
   // Close sockets

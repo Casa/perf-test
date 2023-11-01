@@ -20,20 +20,20 @@ node electrum.js --testnet
   - `--addr <address_file>` expects a file with one address per line
 
 ### Output options
-  - `--compact` lists all metrics on a single line per address, comma separated
-  - `--quiet` suppresses headers and footers
+  - `--verbose` verbose output, -vvv to increase level
+  - `--quiet` suppresses all non-data output, overrides -v
 
 ### Measurements to run
-  - `get_balance` measures time (ms) to complete the [get_balance](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-get-balance) query
-  - `get_history` counts total inputs and measures time (ms) to complete the [get_history](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-get-history) query
-  - `listunspent` counts current UTXOs and measures time (ms) to complete the [listunspent](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-listunspent) query
+  - `--get_balance` measures time (ms) to complete the [get_balance](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-get-balance) query
+  - `--get_history` counts total inputs and measures time (ms) to complete the [get_history](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-get-history) query
+  - `--listunspent` counts current UTXOs and measures time (ms) to complete the [listunspent](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-scripthash-listunspent) query
   - If no measurements are specified then all measurements will run
 
 ### Electrum server options
   - `--host` hostname or IP
   - `--port` port (defaults to 50001 for mainnet, 60001 for testnet)
-  - `--ssl` use TLS (not yet implemented)
   - `--testnet` use testnet (default is to use mainnet)
+  - `--sockets <num>` use pool of &lt;num&gt; sockets
 
 ## Address extraction script
 
